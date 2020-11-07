@@ -1,0 +1,566 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Swagger for PDT",
+    "version": "1.0.0"
+  },
+  "host": "backend.develop.pdt.agifly.cloud",
+  "basePath": "/",
+  "schemes": ["https", "http"],
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "name": "token",
+      "in": "header"
+    }
+  },
+  "paths": {
+    "/products": {
+      "post": {
+        "tags": ["Products"],
+        "summary": "All Products",
+        "description": "",
+        "operationId": "Products",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Language ID",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/Language ID"
+            }
+          }
+        ],
+
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/products/show/{productID}": {
+      "post": {
+        "tags": ["Products"],
+        "summary": "Get Single Product",
+        "description": "",
+        "operationId": "",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "productID",
+            "description": "Product ID",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Language ID",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/Language ID"
+            }
+          }
+        ],
+
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/products/filters_list": {
+      "post": {
+        "tags": ["Products"],
+        "summary": "Get Filtered Products",
+        "description": "",
+        "operationId": "",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Language ID",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/Filtered-Products"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/cart/get_cart_items": {
+      "post": {
+        "tags": ["Cart"],
+        "summary": "Get Items of Cart",
+        "description": "",
+        "operationId": "",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Get-Cart-Items",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Get-Cart-Items"
+            }
+          }
+        ],
+
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/cart/add_to_cart": {
+      "post": {
+        "tags": ["Cart"],
+        "summary": "Add item to cart",
+        "description": "",
+        "operationId": "",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Add-To-Cart Object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Add-To-Cart"
+            }
+          }
+        ],
+
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/cart/update_cart_quantity": {
+      "put": {
+        "tags": ["Cart"],
+        "summary": "Update Quantity of Cart item",
+        "description": "",
+        "operationId": "",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Update-Cart Object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Update-Cart-Quantity"
+            }
+          }
+        ],
+
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/cart/delete_cart_item": {
+      "delete": {
+        "tags": ["Cart"],
+        "summary": "Update Quantity of Cart item",
+        "description": "",
+        "operationId": "",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Delete-Cart-Item Object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Delete-Cart-Item"
+            }
+          }
+        ],
+
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/cart/checkout": {
+      "post": {
+        "tags": ["Cart"],
+        "summary": "It will give checkout URL in response",
+        "description": "",
+        "operationId": "",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Checkout Object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Checkout"
+            }
+          }
+        ],
+
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/languages": {
+      "post": {
+        "tags": ["Languages"],
+        "summary": "Get All Languages",
+        "description": "",
+        "operationId": "",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/menu-links/header_links": {
+      "post": {
+        "tags": ["Menu Links"],
+        "summary": "Get All Menu Header Links",
+        "description": "",
+        "operationId": "",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Language ID",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/Language ID"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/menu-links/footer_links": {
+      "post": {
+        "tags": ["Menu Links"],
+        "summary": "Get All Menu Footer Links",
+        "description": "",
+        "operationId": "",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Language ID",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/Language ID"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/page-content/{pageSlug}": {
+      "post": {
+        "tags": ["CMS Pages"],
+        "summary": "Get Single Page",
+        "description": "",
+        "operationId": "",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "pageSlug",
+            "description": "Page Slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Language ID",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/Language ID"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/user/sign_up": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Sign Up User",
+        "description": "",
+        "operationId": "",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User Sign Up Params",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/User-Sign-Up"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/user/all_users": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Get All Users",
+        "description": "",
+        "operationId": "",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          
+        ],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/user/login": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Login User",
+        "description": "",
+        "operationId": "",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User Login Params",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/User-Login"
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/user/types": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Get User Types",
+        "description": "",
+        "operationId": "",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Language ID": {
+      "type": "object",
+      "properties": {
+        "language_id": {
+          "type": "integer"
+        }
+      }
+    },
+    "Get-Cart-Items": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "required": "true"
+        },
+        "cart_id": {
+          "type": "integer"
+        }
+      }
+    },
+    "Add-To-Cart": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "required": "true"
+        },
+        "quantity": {
+          "type": "integer",
+          "required": "true"
+        },
+        "product_id": {
+          "type": "integer",
+          "required": "true"
+        },
+        "cart_id": {
+          "type": "integer"
+        }
+      }
+    },
+    "Update-Cart-Quantity": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "integer",
+          "required": "true"
+        },
+        "quantity": {
+          "type": "integer",
+          "required": "true"
+        },
+        "user_id": {
+          "type": "integer",
+          "required": "true"
+        }
+      }
+    },
+    "Delete-Cart-Item": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "integer",
+          "required": "true"
+        },
+        "user_id": {
+          "type": "integer",
+          "required": "true"
+        }
+      }
+    },
+    "Checkout": {
+      "type": "object",
+      "properties": {
+        "cart_id": {
+          "type": "integer",
+          "required": "true"
+        }
+      }
+    },
+    "User-Sign-Up": {
+      "type": "object",
+      "properties": {
+        "user_type_id": {
+          "type": "integer",
+          "required": "true"
+        },
+        "first_name": {
+          "type": "string",
+          "required": "true"
+        },
+        "last_name": {
+          "type": "string",
+          "required": "true"
+        },
+        "email": {
+          "type": "string",
+          "required": "true"
+        },
+        "phone": {
+          "type": "string",
+          "required": "true"
+        },
+        "company_name": {
+          "type": "string",
+          "required": "true"
+        }
+      }
+    },
+    "User-Login": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "required": "true"
+        },
+        "password": {
+          "type": "string",
+          "required": "true"
+        }
+      }
+    },
+    "Filtered-Products": {
+      "type": "object",
+      "properties": {
+        "language_id": {
+          "type": "integer",
+          "required": "false"
+        },
+        "product_type_id": {
+          "type": "integer",
+          "required": "false"
+        }
+      }
+    }
+  }
+}
