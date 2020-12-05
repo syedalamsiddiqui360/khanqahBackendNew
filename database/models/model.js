@@ -6,6 +6,7 @@ const person = require('./person');
 const personType = require('./person_type');
 const type = require('./type');
 const category = require('./category');
+const categoryPersonType = require('./category_person_type');
 
 
 module.exports = {
@@ -16,4 +17,5 @@ module.exports = {
   type,
   category,
   personType,
+  categoryPersonType
 }
