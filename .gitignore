@@ -1,7 +1,7 @@
 # misc
 .idea
 
-/api\controllers\uploads
+/uploads
 /node_modules
 
 # build

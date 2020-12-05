@@ -1,13 +1,12 @@
 const audio = require("../../database/models/audio");
 const path = require('path');
-const { body } = require("express-validator");
-const { title } = require("process");
+const { QueryTypes } = require('sequelize');
+const db = require("../../database/connection");
 
 
 
 exports.post = async (req, res, next) => {
   var file = req.files.file
-  var fileName = new Date() + file.name
 
   const data = {
     name: req.body.name,
@@ -16,17 +15,24 @@ exports.post = async (req, res, next) => {
     place: req.body.place,
     date: req.body.date,
     category_id: req.body.category,
+    type_id: req.body.type,
+    person_id: req.body.person,
     islamiDate: req.body.islamiDate,
     description: req.body.description,
   }
-  console.log(req.files)
-  console.log(req.body)
-  try {
 
+  try {
+    var d = new Date();
+    var numbar = Math.random();
+    var p = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + " " + numbar + " " + file.name;
+    var fileName = path.join('uploads/' + p);
+    data.fileName = p;
     if (file != null) {
-      file.mv(__dirname + "/uploads/audio/" + fileName, async function (err) {
-        if (err) {
-          res.send(err);
+      file.mv(fileName, async function (e) {
+        if (e) {
+          res.statusCode = 300;
+          console.log(e);
+          res.send({ "message": e.message });
         }
         else {
           const output = await audio.create(data)
@@ -36,22 +42,22 @@ exports.post = async (req, res, next) => {
     }
     else {
       res.statusCode = 300;
-      res.send("Please Check log DataBase Error");
       console.log("file is null");
+      res.send({ "message": "file is null" });
     }
   } catch (e) {
     res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
     console.log(e);
+    res.send({ "message": e.message });
   }
 };
 
 exports.get = async (req, res, next) => {
   try {
     var { fileName } = req.params;
-
-    var filePath = path.join(__dirname, "/uploads/audio/" + fileName);
-    res.sendFile(filePath)
+    console.log("fileName")
+    var filePath = path.join("uploads/" + fileName);
+    res.sendFile(filePath, { root: './' });
   } catch (e) {
     res.statusCode = 300;
     res.send("Please Check log DataBase Error");
@@ -62,7 +68,7 @@ exports.get = async (req, res, next) => {
 exports.download = async (req, res, next) => {
   try {
     var fileName = req.body.fileName
-    var filePath = path.join(__dirname, "/uploads/audio/" + fileName);
+    var filePath = path.join("uploads/" + fileName);
     res.download(filePath);
   } catch (e) {
     res.statusCode = 300;
@@ -71,30 +77,15 @@ exports.download = async (req, res, next) => {
   }
 };
 
-exports.getAllAshar = async (req, res, next) => {
-  let output = [];
-  let count = 0;
-  const { category_id, offset, limit } = req.body
-  const data = {
-    category_id:category_id,
-    offset: offset,
-    limit: limit
-  }
-  try {
-    await audio.findAndCountAll({
-      offset: data.offset,
-      limit: data.limit
-    })
-      .then(function (result) {
-        count = result.count;
-        output = result.rows;
-        // console.log(result.count);
-        // console.log(result.rows);
-      });
 
-    // const data = await audio.findAll({ where: { deletedAt: null } })
-    // const count = await audio.count({ where: { deletedAt: null } })
-    res.send({ data: output, length: count })
+exports.getAllByTypeAndPerson = async (req, res, next) => {
+  const { typeId, personId, offset, limit } = req.body;
+
+  try {
+    const data = await db.query("select a.id, a.name,a.description,a.date,a.place,a.islamiDate,a.fileName,a.createdAt,a.updatedAt, a.category_person_type_id, a.title from audio a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id inner join person p on p.id = pt.person_id and p.id = " + personId + " and p.deletedAt is null and t.deletedAt is null and t.id = " + typeId + " limit " + offset + " , " + limit, { type: QueryTypes.SELECT });
+    const count = await db.query("select count(a.id) as count from audio a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id inner join person p on p.id = pt.person_id and p.id = " + personId + " and p.deletedAt is null and t.deletedAt is null and t.id = " + typeId, { type: QueryTypes.SELECT });
+
+    res.send({ data: data, length: count[0].count })
   } catch (e) {
     res.statusCode = 300;
     res.send("Please Check log DataBase Error");
@@ -102,31 +93,14 @@ exports.getAllAshar = async (req, res, next) => {
   }
 };
 
-
-exports.getByCategory = async (req, res, next) => {
-  let output = [];
-  let count = 0;
-  const { category_id, offset, limit } = req.body
-  const data = {
-    category_id:category_id,
-    offset: offset,
-    limit: limit
-  }
+exports.getAllByTypePersonCategory = async (req, res, next) => {
+  const { typeId, categoryId, personId, offset, limit } = req.body;
+  console.log(req.body)
   try {
-    await audio.findAndCountAll({
-      offset: data.offset,
-      limit: data.limit
-    })
-      .then(function (result) {
-        count = result.count;
-        output = result.rows;
-        // console.log(result.count);
-        // console.log(result.rows);
-      });
+    const data = await db.query("select a.id, a.name,a.description,a.date,a.place,a.islamiDate,a.fileName,a.createdAt,a.updatedAt, a.category_person_type_id, a.title from audio a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join category c on ctp.category_id = c.id and c.id = " + categoryId + " and c.deletedAt is null inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id inner join person p on p.id = pt.person_id and p.id = " + personId + " and p.deletedAt is null and t.deletedAt is null and t.id = " + typeId + " limit " + offset + " , " + limit, { type: QueryTypes.SELECT });
+    const count = await db.query("select count(a.id) as count from audio a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join category c on ctp.category_id = c.id and c.id = " + categoryId + " and c.deletedAt is null inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id inner join person p on p.id = pt.person_id and p.id = " + personId + " and p.deletedAt is null and t.deletedAt is null and t.id = " + typeId, { type: QueryTypes.SELECT });
 
-    // const data = await audio.findAll({ where: { deletedAt: null } })
-    // const count = await audio.count({ where: { deletedAt: null } })
-    res.send({ data: output, length: count })
+    res.send({ data: data, length: count[0].count })
   } catch (e) {
     res.statusCode = 300;
     res.send("Please Check log DataBase Error");
@@ -134,14 +108,14 @@ exports.getByCategory = async (req, res, next) => {
   }
 };
 
-exports.getAllByPerson = async (req, res, next) => {
+exports.getAllByType = async (req, res, next) => {
+  const { typeId, offset, limit } = req.body;
+
   try {
-    const person = req.body.person
-    console.log(person)
+    const data = await db.query("select a.id, a.name,a.description,a.date,a.place,a.islamiDate,a.fileName,a.createdAt,a.updatedAt, a.category_person_type_id, a.title from audio a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id and t.deletedAt is null and t.id =" + typeId + " limit " + offset + " , " + limit, { type: QueryTypes.SELECT });
+    const count = await db.query("select count(a.id) as count from audio a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id and t.deletedAt is null and t.id =" + typeId, { type: QueryTypes.SELECT });
 
-    const data = await audio.findAll({ where: { person: person, deletedAt: null } })
-
-    res.send(data)
+    res.send({ data: data, length: count[0].count })
   } catch (e) {
     res.statusCode = 300;
     res.send("Please Check log DataBase Error");
@@ -150,13 +124,13 @@ exports.getAllByPerson = async (req, res, next) => {
 };
 
 exports.getAllByCategory = async (req, res, next) => {
+  const { categoryId, offset, limit } = req.body;
+
   try {
-    const category = req.body.category
-    console.log(category)
+    const data = await db.query("select a.id, a.name,a.description,a.date,a.place,a.islamiDate,a.fileName,a.createdAt,a.updatedAt, a.category_person_type_id, a.title from audio a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join category c on ctp.category_id = c.id and c.id = " + categoryId + " and c.deletedAt is null limit " + offset + " , " + limit, { type: QueryTypes.SELECT });
+    const count = await db.query("select count(a.id) as count from audio a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join category c on ctp.category_id = c.id and c.id = " + categoryId + " and c.deletedAt is null", { type: QueryTypes.SELECT });
 
-    const data = await audio.findAll({ where: { category: category, deletedAt: null } })
-
-    res.send(data)
+    res.send({ data: data, length: count[0].count })
   } catch (e) {
     res.statusCode = 300;
     res.send("Please Check log DataBase Error");
@@ -164,67 +138,3 @@ exports.getAllByCategory = async (req, res, next) => {
   }
 };
 
-exports.getAllByPersonAndcategory = async (req, res, next) => {
-  try {
-    const person = req.body.person
-    const category = req.body.category
-    console.log(person)
-
-    const data = await audio.findAll({ where: { person: person, category: category, deletedAt: null } })
-
-    res.send(data)
-  } catch (e) {
-    res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
-    console.log(e);
-  }
-};
-
-exports.getAllByTypeAndPerson = async (req, res, next) => {
-  try {
-    const person = req.body.person
-    const type = req.body.type
-    console.log(person)
-
-    const data = await audio.findAll({ where: { person: person, type: type, deletedAt: null } })
-
-    res.send(data)
-  } catch (e) {
-    res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
-    console.log(e);
-  }
-};
-
-exports.getAllByTypeAndcategory = async (req, res, next) => {
-  try {
-    const type = req.body.type
-    const category = req.body.category
-    console.log(type)
-
-    const data = await audio.findAll({ where: { type: type, category: category, deletedAt: null } })
-
-    res.send(data)
-  } catch (e) {
-    res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
-    console.log(e);
-  }
-};
-
-exports.getAllByTypeAndPersonAndcategory = async (req, res, next) => {
-  try {
-    const person = req.body.person
-    const category = req.body.category
-    const type = req.body.type
-    console.log(person)
-
-    const data = await audio.findAll({ where: { type: type, person: person, category: category, deletedAt: null } })
-
-    res.send(data)
-  } catch (e) {
-    res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
-    console.log(e);
-  }
-};

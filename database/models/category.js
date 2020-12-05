@@ -9,14 +9,6 @@ const table = db.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    type_id: {
-      type: Sequelize.BIGINT(11),
-      references: {
-        model: "types", //  refers to table name
-        key: "id", //  refers to column name in reference table
-      },
-    },
-
     title: {
       type: Sequelize.STRING(255),
     },
