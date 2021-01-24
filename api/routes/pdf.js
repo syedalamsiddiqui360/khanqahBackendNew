@@ -3,21 +3,19 @@ const router = express.Router();
 
 
 //const checkAuth = require("../middleware/check-auth");
-const bayanController = require("../controllers/audio_controller");
+const pdfController = require("../controllers/pdf_controller");
 
 
 //checkAuth IS ASSIGNED TO THE ROUTE AS MIDDLEWARE BECAUSE ITS A PROTECTED ROUTE AND MUST PASS TOKEN VERIFICATION
-router.post("/post",    bayanController.post);
+router.post("/post",    pdfController.post);
 
-router.post("/download",    bayanController.download);
-router.get("/get/:fileName",    bayanController.get);
+router.get("/download/:fileName",    pdfController.download);
+router.get("/get/:fileName",    pdfController.get);
 
-router.post("/get_all_by_type",    bayanController.getAllByType);
-router.post("/get_all_by_person",    bayanController.getAllByPerson);
-router.post("/get_all_by_category",    bayanController.getAllByCategory);
-router.post("/get_all_by_person_and_category",    bayanController.getAllByPersonAndcategory);
-router.post("/get_all_by_type_and_category",    bayanController.getAllByTypeAndPerson);
-router.post("/get_all_by_type_and_category",    bayanController.getAllByTypeAndcategory);
-router.post("/get_all_by_type_and_person_and_category",    bayanController.getAllByTypeAndPersonAndcategory);
-
+router.post("/get_all_by_type_person",    pdfController.getAllByTypeAndPerson);
+router.post("/get_all_by_type_person_category",    pdfController.getAllByTypePersonCategory);
+router.post("/get_all_by_category",    pdfController.getAllByCategory);
+router.post("/get_all_by_type",    pdfController.getAllByType);
+router.post("/get_all_by_Search",    pdfController.getAllBySearch);
+router.post("/get_by_type",    pdfController.getByType);
 module.exports = router;

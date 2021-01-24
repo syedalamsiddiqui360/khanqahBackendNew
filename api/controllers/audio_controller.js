@@ -138,3 +138,32 @@ exports.getAllByCategory = async (req, res, next) => {
   }
 };
 
+exports.getAllBySearch = async (req, res, next) => {
+  const { search, offset, limit } = req.body;
+
+  try {
+    const data = await db.query("select a.id, a.name,a.description,a.date,a.place,a.islamiDate,a.fileName,a.createdAt,a.updatedAt, a.category_person_type_id, a.title from audio a where a.title like '%"+search+"%' OR a.date like '%"+search+"%' OR a.description like '%"+search+"%' limit " + offset + " , " + limit, { type: QueryTypes.SELECT });
+    const count = await db.query("select count(a.id) as count from audio a where a.title like '%"+search+"%' OR a.date like '%"+search+"%' OR a.description like '%"+search+"%'", { type: QueryTypes.SELECT });
+
+    res.send({ data: data, length: count[0].count })
+  } catch (e) {
+    res.statusCode = 300;
+    res.send("Please Check log DataBase Error");
+    console.log(e);
+  }
+};
+
+//home page api
+exports.getByType = async (req, res, next) => {
+  const { typeId, limit , order } = req.body;
+
+  try {
+    const data = await db.query("select a.id, a.fileName from audio a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id and t.deletedAt is null and a.deletedAt is null and ctp.deletedAt is null and t.id = "+typeId+" order by date DESC limit "+limit, { type: QueryTypes.SELECT });
+
+    res.send(data)
+  } catch (e) {
+    res.statusCode = 300;
+    res.send("Please Check log DataBase Error");
+    console.log(e);
+  }
+};

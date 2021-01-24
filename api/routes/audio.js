@@ -15,7 +15,10 @@ router.get("/get/:fileName",    audioController.get);
 router.post("/get_all_by_type_person",    audioController.getAllByTypeAndPerson);
 router.post("/get_all_by_type_person_category",    audioController.getAllByTypePersonCategory);
 router.post("/get_all_by_category",    audioController.getAllByCategory);
+router.post("/get_all_by_Search",    audioController.getAllBySearch);
 router.post("/get_all_by_type",    audioController.getAllByType);
+
+router.post("/get_by_type",    audioController.getByType);
 
 
 module.exports = router;
