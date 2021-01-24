@@ -9,24 +9,10 @@ const pdf = db.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    category_id: {
+    category_person_type_id: {
       type: Sequelize.BIGINT(11),
       references: {
-        model: "category", //  refers to table name
-        key: "id", //  refers to column name in reference table
-      },
-    },
-    type_id: {
-      type: Sequelize.BIGINT(11),
-      references: {
-        model: "types", //  refers to table name
-        key: "id", //  refers to column name in reference table
-      },
-    },
-    person_id: {
-      type: Sequelize.BIGINT(11),
-      references: {
-        model: "person", //  refers to table name
+        model: "category_person_type", //  refers to table name
         key: "id", //  refers to column name in reference table
       },
     },
@@ -39,13 +25,13 @@ const pdf = db.define(
     description: {
       type: Sequelize.STRING(500),
     },
-    date: {
-      type: Sequelize.STRING(255),
-    },
     islamiDate: {
       type: Sequelize.STRING(255),
     },
     fileName: {
+      type: Sequelize.STRING(500),
+    },
+    imageName: {
       type: Sequelize.STRING(500),
     },
   },

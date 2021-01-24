@@ -37,6 +37,7 @@ app.use(upload())
 
 const userRoutes = require("./api/routes/user");
 const audioRoutes = require("./api/routes/audio");
+const pdfRoutes = require("./api/routes/pdf");
 const personRoutes = require("./api/routes/person");
 const typeRoutes = require("./api/routes/type");
 const categoryRoutes = require("./api/routes/category");
@@ -64,6 +65,7 @@ app.use((req, res, next) => {
 
 app.use("/user", userRoutes);
 app.use("/audio", audioRoutes);
+app.use("/pdf", pdfRoutes);
 app.use("/type", typeRoutes);
 app.use("/person", personRoutes);
 app.use("/category", categoryRoutes);
