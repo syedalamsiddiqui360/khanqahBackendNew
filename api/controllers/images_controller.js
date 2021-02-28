@@ -1,135 +1,85 @@
-const user = require("../../database/models/users");
-// const user_type = require("../ ");
-//const bcrypt = require("bcrypt");
-//const jwt = require("jsonwebtoken");
-//const { validationResult } = require("express-validator")
-require("dotenv").config();
+const images = require("../../database/models/images");
 const path = require('path');
 const fileSystem = require('fs')
 
-//const readFile = util.promisify(fileSystem.readFile);
 
 
-
-//get  all users from user model
 exports.post = async (req, res, next) => {
+
+
   try {
-    console.log(req.files)
-    var file = req.files.file
-    var fileName = file.name
-    file.mv(__dirname + "/uploads/images/" + fileName, function (err) {
-      if (err) {
-        res.send(err);
-      }
-      else {
-        res.send("upload files");
-      }
-    })
+    var files = req.files.file
+    var d = new Date();
+ 
+
+    if (files != null) {
+
+      files.forEach(file => {
+        var numbar = Math.random();
+        var p = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + " " + numbar + " " + file.name;
+        var fileName = path.join('uploads/' + p);
+
+        const data = {
+          title: file.name,
+          imageName: p,
+          slider_id: req.body.slider_id
+        }
+
+        file.mv(fileName, async function (e) {
+          if (e) {
+            res.statusCode = 300;
+            console.log(e);
+            res.send({ "message": e.message });
+          }
+          else {
+        console.log(data);
+
+            const output = await images.create(data)
+            res.send("file uploaded");
+          }
+        })
+
+      });
+
+    }
+    else {
+      res.statusCode = 300;
+      console.log("file is null");
+      res.send({ "message": "file is null" });
+    }
   } catch (e) {
     res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
     console.log(e);
+    res.send({ "message": e.message });
   }
 };
-
 
 exports.get = async (req, res, next) => {
   try {
-    var { fileName, folder } = req.params;
-    console.log(fileName + " " + folder)
-    var filePath = path.join(__dirname, "/uploads/audio/" + folder + "/" + fileName);
-    res.sendFile(filePath)
-
+    var { fileName } = req.params;
+    var filePath = path.join("uploads/" + fileName);
+    res.sendFile(filePath, { root: './' });
   } catch (e) {
     res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
+    res.send({ "message": e.message });
     console.log(e);
   }
 };
 
 
-exports.getAll = async (req, res, next) => {
-  // console.log("here")
-  let fileList = []
+exports.getBySliderId = async (req, res, next) => {
+  const { sliderId, limit } = req.body;
+
   try {
-    var fileName = req.body.fileName
-    //console.log(fileName)
-    let list = [
-      {
-        name: "140516_002.MP3"
-      },
-      {
-        name: "140603_001.MP3"
-      },
-      {
-        name: "140516_002.MP3"
-      }]
+    const data = await images.findAll({
+      limit:limit,
+      where:{slider_id:sliderId , deletedAt:null}
+    })
 
-    var fileName = req.body.fileName
-    console.log(fileName)
-    for (let i = 0; i < list.length; i++) {
-      filePath = path.join(__dirname, "/uploads/ashaar/" + list[i].name);
-      fileList.push(filePath)
-    }
-    var stat = fileSystem.statSync(filePath);
-
-
-    // fileSystem.readFile(filePath, function (err, content) {
-    //   if (err) {
-    //     console.log(err)
-    //   } else {
-    //     // res.writeHead(200, {
-    //     //   'Content-Type': 'audio/mpeg',
-    //     //   'Content-Length': stat.size
-    //     // });
-    //     res.end(content)
-    //   }
-    // });
-
-    //res.sendFile(filePath)
-    res.send({ fileList })
-
+    res.send(data)
   } catch (e) {
     res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
+    res.send({ "message": e.message });
     console.log(e);
   }
 };
-
-exports.download = async (req, res, next) => {
-  // console.log("here")
-  try {
-    var fileName = req.body.fileName
-    console.log(fileName)
-    var join = __dirname + "/uploads/140516_002.MP3";
-    var filePath = path.join(__dirname, "/uploads/ashaar/140516_002.MP3");
-    var stat = fileSystem.statSync(filePath);
-
-
-
-    // fileSystem.readFile(filePath, function (err, content) {
-
-    //   if (err) {
-    //     console.log(err)
-    //   } else {
-    //     res.writeHead(200, {
-    //       'Content-Type': 'audio/mpeg',
-    //       'Content-Length': stat.size
-    //     });
-    //     res.end(content)
-    //   }
-    // });
-
-    // We replaced all the event handlers with a simple call to readStream.pipe()
-    //    readStream.pipe(res);
-
-
-    res.download(filePath);
-
-  } catch (e) {
-    res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
-    console.log(e);
-  }
-};
-

@@ -41,8 +41,8 @@ const pdfRoutes = require("./api/routes/pdf");
 const personRoutes = require("./api/routes/person");
 const typeRoutes = require("./api/routes/type");
 const categoryRoutes = require("./api/routes/category");
-//const menuLinksRoutes = require("./api/routes/menu_links");
-
+const imagesRoutes = require("./api/routes/images");
+const newsRoutes = require("./api/routes/news")
 
 app.use(morgan("dev")); // it will log all the requests.
 app.use(bodyParser.urlencoded({ extended: false })); // it will handle request body
@@ -69,7 +69,8 @@ app.use("/pdf", pdfRoutes);
 app.use("/type", typeRoutes);
 app.use("/person", personRoutes);
 app.use("/category", categoryRoutes);
-
+app.use("/images", imagesRoutes);
+app.use("/news", newsRoutes);
 
 // //error handling
 app.use((req, res, next) => {
