@@ -3,21 +3,13 @@ const router = express.Router();
 
 
 //const checkAuth = require("../middleware/check-auth");
-const bayanController = require("../controllers/audio_controller");
-//const userRequests = require("../requests/user_requests");
+const imagesController = require("../controllers/images_controller");
 
 
 //checkAuth IS ASSIGNED TO THE ROUTE AS MIDDLEWARE BECAUSE ITS A PROTECTED ROUTE AND MUST PASS TOKEN VERIFICATION
-router.post("/post",    bayanController.post);
-router.post("/download",    bayanController.download);
-router.get("/get/:folder/:fileName",    bayanController.get);
-router.post("/get",    bayanController.get);
-router.get("/getall",    bayanController.getAll);
-router.post("/getall",    bayanController.getAll);
+router.post("/post",    imagesController.post);
+router.post("/get_by_slider_id",    imagesController.getBySliderId);
 
-router.get("/get",function(req,res){
-    //res.send([])
-    res.sendFile(__dirname+"/index.html");
-  })
+
 
 module.exports = router;

@@ -1,24 +1,23 @@
 const Sequelize = require("sequelize");
 const db = require("../connection");
-const bcrypt = require("bcrypt");
 
 const table = db.define(
-  "images",
+  "news",
   {
     id: {
       type: Sequelize.BIGINT(11),
       autoIncrement: true,
       primaryKey: true,
     },
-    slider_id: {
-      type: Sequelize.BIGINT(11),
-    },
     title: {
       type: Sequelize.STRING(255),
     },
-    imageName: {
-      type: Sequelize.STRING(255),
+    description: {
+        type: Sequelize.STRING(500),
     },
+    expireDate:{
+       type: Sequelize.DATE
+    }
   },
   {
     paranoid: true,
@@ -28,7 +27,7 @@ const table = db.define(
     // if you don't want that, set the following
     freezeTableName: true,
     // define the table's name
-    tableName: "images",
+    tableName: "news",
   }
 );
 module.exports = table;
