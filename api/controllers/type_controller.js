@@ -1,69 +1,64 @@
 const type = require("../../database/models/type");
 
 
-
 exports.post = async (req, res, next) => {
-  // var file = req.files.file
-  // var fileName = new Date() + file.name
-
-  // const data={
-  //   name: req.body.name,
-  //   title:req.body.title,
-  //   type: req.body.type,
-  //   fileName: req.body.fileName,
-  //   place: req.body.place,
-  //   date:req.body.date,
-  //   category: req.body.category,
-  //   person: req.body.person,
-  //   islamiDate: req.body.islamiDate,
-  //   description: req.body.description
-  // }
-  // console.log(req.files)
-  // console.log(req.body)
-  // try {
-
-  //   if (file != null) {
-  //     file.mv(__dirname + "/uploads/audio/" + fileName, async function (err) {
-  //       if (err) {
-  //         res.send(err);
-  //       }
-  //       else {
-  //         const output = await audio.create(data)           
-  //         res.send("file uploaded");
-  //       }
-  //     })
-  //   }
-  //   else{
-  //     res.statusCode = 300;
-  //     res.send("Please Check log DataBase Error");
-  //     console.log("file is null");
-  //   }
-  // } catch (e) {
-  //   res.statusCode = 300;
-  //   res.send("Please Check log DataBase Error");
-  //   console.log(e);
-  // }
+  try {
+   await type.create(req.body);
+   res.send("Insert Successfully")
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "message": e.message });
+  }
 };
 
-exports.get = async (req, res, next) => {
+exports.getAll = async (req, res, next) => {
   try {
-    const data = await type.findAll({ where: {  deletedAt: null } });
+    const {offset , limit} = req.body;
+    const data = await type.findAndCountAll({
+      offset: offset,
+      limit: limit, 
+      where: { deletedAt: null } });
     res.send(data)
   } catch (e) {
     res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
     console.log(e);
+    res.send({ "message": e.message });
   }
 };
 
 exports.getById = async (req, res, next) => {
-  const id = req.body.id
   try {
-    const data = await type.findAll({ where: { id: id, deletedAt: null } });
+    const { id } = req.params;
+    const data = await type.findOne({where: {id : id , deletedAt : null}});
     res.send(data)
   } catch (e) {
     res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
     console.log(e);
+    res.send({ "message": e.message });
+  }
+};
+
+exports.update = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const result = await type.update( req.body ,{where: {id : id , deletedAt : null}});
+    res.send(result == 1 ? true:false);
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "messagaae": e.message });
+  }
+};
+
+exports.delete = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const result = await type.destroy({where: {id : id}});
+    res.send(result == 1 ? true:false);
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "message": e.message });
   }
 };
