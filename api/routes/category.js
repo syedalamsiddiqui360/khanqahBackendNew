@@ -8,6 +8,7 @@ const categoryController = require("../controllers/category_controller");
 
 //checkAuth IS ASSIGNED TO THE ROUTE AS MIDDLEWARE BECAUSE ITS A PROTECTED ROUTE AND MUST PASS TOKEN VERIFICATION
 router.post("/post",    categoryController.post);
+router.post("/get_by_limit",    categoryController.getByLimit);
 router.post("/get_all",    categoryController.getAll);
 router.post("/get_by_id/:id",    categoryController.getById);
 router.delete("/delete/:id",    categoryController.delete);

@@ -14,12 +14,24 @@ exports.post = async (req, res, next) => {
   }
 };
 
-exports.getAll = async (req, res, next) => {
+exports.getByLimit = async (req, res, next) => {
   try {
     const {offset , limit} = req.body;
     const data = await person.findAndCountAll({
       offset: offset,
       limit: limit, 
+      where: { deletedAt: null } });
+    res.send(data)
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "message": e.message });
+  }
+};
+
+exports.getAll = async (req, res, next) => {
+  try {
+    const data = await person.findAll({
       where: { deletedAt: null } });
     res.send(data)
   } catch (e) {

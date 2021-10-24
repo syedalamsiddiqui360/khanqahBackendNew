@@ -4,7 +4,7 @@ const { QueryTypes } = require('sequelize');
 const db = require("../../database/connection");
 
 
-
+//admin api's
 exports.post = async (req, res, next) => {
   var imageFile = req.files.imageFile
   var pdfFile = req.files.pdfFile
@@ -67,6 +67,130 @@ exports.post = async (req, res, next) => {
   }
 };
 
+exports.getByLimit = async (req, res, next) => {
+  try {
+    const {offset , limit} = req.body;
+    const data = await pdf.findAndCountAll({
+      offset: offset,
+      limit: limit, 
+      where: { deletedAt: null } });
+    res.send(data)
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "message": e.message });
+  }
+};
+
+exports.getAll = async (req, res, next) => {
+  try {
+    const data = await pdf.findAll({
+      where: { deletedAt: null } });
+    res.send(data)
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "message": e.message });
+  }
+};
+
+exports.getById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const data = await pdf.findOne({where: {id : id , deletedAt : null}});
+    res.send(data)
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "message": e.message });
+  }
+};
+
+exports.update = async (req, res, next) => {
+  
+  const {id} = req.params;
+  const data = {
+    name: req.body.name,
+    title: req.body.title,
+    fileName: fileName,
+    imageName: imageName,
+    category_person_type_id: req.body.category,
+    islamiDate: req.body.islamiDate,
+    description: req.body.description,
+  }
+  
+  try {
+    var d = new Date();
+    var numbar = Math.random();
+    
+    
+    
+    const record = await pdf.findOne({where: {id : id , deletedAt : null}});
+    if (req.files != null) {
+      
+      var imageFile = req.files.imageFile
+      var pdfFile = req.files.pdfFile
+
+      var filePath = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + " " + numbar + " " + pdfFile.name;
+      var fileName = path.join('uploads/' + filePath);
+      
+      var imagePath = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + " " + numbar + " " + imageFile.name;
+      var imageName = path.join('uploads/' + imagePath);
+      data.imageName = imagePath;
+      
+      imageFile.mv(imageName, function (e) {
+        if (e) {
+          res.statusCode = 300;
+          console.log(e);
+          res.send({ "message": e.message });
+        }
+      })
+      if (pdfFile != null) {
+        data.fileName = filePath;
+        pdfFile.mv(fileName, async function (e) {
+          if (e) {
+            res.statusCode = 300;
+            console.log(e);
+            res.send({ "message": e.message });
+          }
+          else {
+            const result = await pdf.update( data ,{where: {id : id , deletedAt : null}});
+            res.send(result == 1 ? true:false);
+          }
+        })
+      }
+      else{
+        data.fileName = record.fileName;
+        const result = await pdf.update( data ,{where: {id : id , deletedAt : null}});
+        res.send(result == 1 ? true:false);        
+      }
+    }
+    else {
+      data.imageName = record.imageName;
+      data.fileName = record.fileName;
+      const result = await pdf.update( data ,{where: {id : id , deletedAt : null}});
+      res.send(result == 1 ? true:false);        
+    }
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "message": e.message });
+  }
+};
+
+exports.delete = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const result = await pdf.destroy({where: {id : id}});
+    res.send(result == 1 ? true:false);
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "message": e.message });
+  }
+};
+
+//user Api's
 exports.get = async (req, res, next) => {
   try {
     var { fileName } = req.params;

@@ -12,20 +12,32 @@ exports.post = async (req, res, next) => {
   }
 };
 
-exports.getAll = async (req, res, next) => {
+exports.getByLimit = async (req, res, next) => {
   try {
     const {offset , limit} = req.body;
     const data = await type.findAndCountAll({
       offset: offset,
       limit: limit, 
       where: { deletedAt: null } });
-    res.send(data)
-  } catch (e) {
-    res.statusCode = 300;
-    console.log(e);
-    res.send({ "message": e.message });
-  }
-};
+      res.send(data)
+    } catch (e) {
+      res.statusCode = 300;
+      console.log(e);
+      res.send({ "message": e.message });
+    }
+  };
+  
+  exports.getAll = async (req, res, next) => {
+    try {
+      const data = await type.findAll({
+        where: { deletedAt: null } });
+      res.send(data)
+    } catch (e) {
+      res.statusCode = 300;
+      console.log(e);
+      res.send({ "message": e.message });
+    }
+  };
 
 exports.getById = async (req, res, next) => {
   try {
@@ -62,3 +74,4 @@ exports.delete = async (req, res, next) => {
     res.send({ "message": e.message });
   }
 };
+
