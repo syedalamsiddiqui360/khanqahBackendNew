@@ -3,14 +3,11 @@ const path = require('path');
 const fileSystem = require('fs')
 
 
-
+//admin api's
 exports.post = async (req, res, next) => {
-
-
   try {
     var files = req.files.file
     var d = new Date();
- 
 
     if (files != null) {
 
@@ -32,7 +29,7 @@ exports.post = async (req, res, next) => {
             res.send({ "message": e.message });
           }
           else {
-        console.log(data);
+            console.log(data);
 
             const output = await images.create(data)
             res.send("file uploaded");
@@ -54,6 +51,103 @@ exports.post = async (req, res, next) => {
   }
 };
 
+exports.getByLimit = async (req, res, next) => {
+  try {
+    const {offset , limit} = req.body;
+    const data = await images.findAndCountAll({
+      offset: offset,
+      limit: limit, 
+      where: { deletedAt: null } });
+    res.send(data)
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "message": e.message });
+  }
+};
+
+exports.getAll = async (req, res, next) => {
+  try {
+    const data = await images.findAll({
+      where: { deletedAt: null } });
+    res.send(data)
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "message": e.message });
+  }
+};
+
+exports.getById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const data = await images.findOne({where: {id : id , deletedAt : null}});
+    res.send(data)
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "message": e.message });
+  }
+};
+
+exports.update = async (req, res, next) => {
+  try {
+    var file = req.files.file
+    
+    const {id} = req.params;
+    const data = {
+      title: '',
+      imageName: '',
+      slider_id: req.body.slider_id
+    }
+    
+    var d = new Date();
+    var numbar = Math.random();
+    var p = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + " " + numbar + " " + file.name;
+    var fileName = path.join('uploads/' + p);
+
+    if (file != null) {
+      data.title = file.name;
+      data.imageName = p;
+      file.mv(fileName, async function (e) {
+        if (e) {
+          res.statusCode = 300;
+          console.log(e);
+          res.send({ "message": e.message });
+        }
+        else {
+          const result = await images.update( data ,{where: {id : id , deletedAt : null}});
+          res.send(result == 1 ? true:false);
+        }
+      })
+    }
+    else {
+      const record = await images.findOne({where: {id : id , deletedAt : null}});
+      data.title = record.title;
+      data.fileName = record.fileName;
+      const result = await images.update( data ,{where: {id : id , deletedAt : null}});
+      res.send(result == 1 ? true:false);
+    }
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "messagaae": e.message });
+  }
+};
+
+exports.delete = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const result = await images.destroy({where: {id : id}});
+    res.send(result == 1 ? true:false);
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "message": e.message });
+  }
+};
+
+//user api's
 exports.get = async (req, res, next) => {
   try {
     var { fileName } = req.params;

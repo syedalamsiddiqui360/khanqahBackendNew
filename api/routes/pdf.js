@@ -8,6 +8,11 @@ const pdfController = require("../controllers/pdf_controller");
 
 //checkAuth IS ASSIGNED TO THE ROUTE AS MIDDLEWARE BECAUSE ITS A PROTECTED ROUTE AND MUST PASS TOKEN VERIFICATION
 router.post("/post",    pdfController.post);
+router.post("/get_by_limit",    pdfController.getByLimit);
+router.post("/get_all",    pdfController.getAll);
+router.post("/get_by_id/:id",    pdfController.getById);
+router.delete("/delete/:id",    pdfController.delete);
+router.put("/update/:id",    pdfController.update);
 
 router.get("/download/:fileName",    pdfController.download);
 router.get("/get/:fileName",    pdfController.get);

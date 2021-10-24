@@ -4,7 +4,7 @@ const { QueryTypes } = require('sequelize');
 const db = require("../../database/connection");
 
 
-
+//Admin Api's
 exports.post = async (req, res, next) => {
   var file = req.files.file
 
@@ -35,7 +35,7 @@ exports.post = async (req, res, next) => {
           res.send({ "message": e.message });
         }
         else {
-          const output = await audio.create(data)
+          // const output = await audio.create(data)
           res.send("file uploaded");
         }
       })
@@ -52,7 +52,110 @@ exports.post = async (req, res, next) => {
   }
 };
 
-exports.get = async (req, res, next) => {
+exports.getByLimit = async (req, res, next) => {
+  try {
+    const {offset , limit} = req.body;
+    const data = await audio.findAndCountAll({
+      offset: offset,
+      limit: limit, 
+      where: { deletedAt: null } });
+    res.send(data)
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "message": e.message });
+  }
+};
+
+exports.getAll = async (req, res, next) => {
+  try {
+    const data = await audio.findAll({
+      where: { deletedAt: null } });
+    res.send(data)
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "message": e.message });
+  }
+};
+
+exports.getById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const data = await audio.findOne({where: {id : id , deletedAt : null}});
+    res.send(data)
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "message": e.message });
+  }
+};
+
+exports.update = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    
+    const data = {
+      name: req.body.name,
+      title: req.body.title,
+      fileName: fileName,
+      place: req.body.place,
+      date: req.body.date,
+      category_id: req.body.category,
+      type_id: req.body.type,
+      person_id: req.body.person,
+      islamiDate: req.body.islamiDate,
+      description: req.body.description,
+    }
+    
+    var d = new Date();
+    var numbar = Math.random();
+    
+    if (req.files != null) {
+      var file = req.files.file
+      var p = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + " " + numbar + " " + file.name;
+      var fileName = path.join('uploads/' + p);
+
+      data.fileName = p;
+      file.mv(fileName, async function (e) {
+        if (e) {
+          res.statusCode = 300;
+          console.log(e);
+          res.send({ "message": e.message });
+        }
+        else {
+          const result = await audio.update( data ,{where: {id : id , deletedAt : null}});
+          res.send(result == 1 ? true:false);
+        }
+      })
+    }
+    else {
+      const record = await audio.findOne({where: {id : id , deletedAt : null}});
+      data.fileName = record.fileName;
+      const result = await audio.update( data ,{where: {id : id , deletedAt : null}});
+      res.send(result == 1 ? true:false);
+    }
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "messagaae": e.message });
+  }
+};
+
+exports.delete = async (req, res, next) => {
+  try {
+    const {id} = req.params;
+    const result = await audio.destroy({where: {id : id}});
+    res.send(result == 1 ? true:false);
+  } catch (e) {
+    res.statusCode = 300;
+    console.log(e);
+    res.send({ "message": e.message });
+  }
+};
+
+//User Api's
+exports.getFile = async (req, res, next) => {
   try {
     var { fileName } = req.params;
     console.log("fileName")
