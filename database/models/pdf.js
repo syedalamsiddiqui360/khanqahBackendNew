@@ -9,12 +9,11 @@ const pdf = db.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    category_person_type_id: {
+    category_id: {
       type: Sequelize.BIGINT(11),
-      references: {
-        model: "category_person_type", //  refers to table name
-        key: "id", //  refers to column name in reference table
-      },
+    },
+    person_id: {
+      type: Sequelize.BIGINT(11),
     },
     title: {
       type: Sequelize.STRING(255),

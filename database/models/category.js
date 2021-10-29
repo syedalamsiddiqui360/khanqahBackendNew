@@ -9,6 +9,9 @@ const table = db.define(
       autoIncrement: true,
       primaryKey: true,
     },
+    type_id: {
+      type: Sequelize.BIGINT(11),
+    },
     title: {
       type: Sequelize.STRING(255),
     },

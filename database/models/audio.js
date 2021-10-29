@@ -9,7 +9,10 @@ const bayan = db.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    category_person_type_id: {
+    category_id: {
+      type: Sequelize.BIGINT(11),
+    },
+    person_id: {
       type: Sequelize.BIGINT(11),
     },
     title: {
