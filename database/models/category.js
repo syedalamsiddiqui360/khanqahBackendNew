@@ -9,7 +9,7 @@ const table = db.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    type_id: {
+    typeId: {
       type: Sequelize.BIGINT(11),
     },
     title: {

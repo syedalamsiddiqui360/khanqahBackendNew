@@ -10,7 +10,7 @@ const table = db.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    slider_id: {
+    sliderId: {
       type: Sequelize.BIGINT(11),
     },
     title: {

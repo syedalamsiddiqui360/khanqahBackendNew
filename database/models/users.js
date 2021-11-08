@@ -10,10 +10,10 @@ const user = db.define(
       autoIncrement: true,
       primaryKey: true,
     },
-    firstname: {
+    firstName: {
       type: Sequelize.STRING(255),
     },
-    lastname: {
+    lastName: {
       type: Sequelize.STRING(255),
     },
     email: {

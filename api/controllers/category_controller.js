@@ -79,7 +79,10 @@ exports.delete = async (req, res, next) => {
 exports.getByType = async (req, res, next) => {
   const { typeId } = req.body;
   try {
-    const data = await db.query("select c.title, c.id from category c inner join category_person_type cpt on c.id = cpt.category_id inner join person_type pt on cpt.person_type_id = pt.id inner join types t on pt.type_id = t.id and t.deletedAt is null and t.id = " + typeId + " GROUP BY c.id", { type: QueryTypes.SELECT });
+    // const data = await db.query("select c.title, c.id from category c inner join category_person_type cpt on c.id = cpt.category_id inner join person_type pt on cpt.person_type_id = pt.id inner join types t on pt.type_id = t.id and t.deletedAt is null and t.id = " + typeId + " GROUP BY c.id", { type: QueryTypes.SELECT });
+    const data = await category.findAll({
+      where: {type_id: typeId , deletedAt:null}
+    });
     res.send(data)
   } catch (e) {
     res.statusCode = 300;
