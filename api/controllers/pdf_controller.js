@@ -50,7 +50,7 @@ exports.post = async (req, res, next) => {
           }
           else {
             const output = await pdf.create(data)
-            res.send("file uploaded");
+            res.send("Insert Successfully");
           }
         })
       }

@@ -2,26 +2,24 @@ const audio = require("../../database/models/audio");
 const path = require('path');
 const { QueryTypes } = require('sequelize');
 const db = require("../../database/connection");
+const { type } = require("os");
 
 
 //Admin Api's
 exports.post = async (req, res, next) => {
-  var file = req.files.file
-
-  const data = {
-    name: req.body.name,
-    title: req.body.title,
-    fileName: fileName,
-    place: req.body.place,
-    date: req.body.date,
-    category_id: req.body.category,
-    type_id: req.body.type,
-    person_id: req.body.person,
-    islamiDate: req.body.islamiDate,
-    description: req.body.description,
-  }
-
   try {
+    var file = req.files.file
+    const data = {
+      name: req.body.name,
+      title: req.body.title,
+      fileName: fileName,
+      place: req.body.place,
+      date: req.body.date,
+      categoryId: req.body.categoryId,
+      personId: req.body.personId,
+      islamiDate: req.body.islamiDate,
+      description: req.body.description,
+    }
     var d = new Date();
     var numbar = Math.random();
     var p = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + " " + numbar + " " + file.name;
@@ -35,8 +33,8 @@ exports.post = async (req, res, next) => {
           res.send({ "message": e.message });
         }
         else {
-          // const output = await audio.create(data)
-          res.send("file uploaded");
+          await audio.create(data)
+          res.send("Insert Successfully");
         }
       })
     }
@@ -94,28 +92,23 @@ exports.getById = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   try {
     const {id} = req.params;
-    
     const data = {
       name: req.body.name,
       title: req.body.title,
       fileName: fileName,
       place: req.body.place,
       date: req.body.date,
-      category_id: req.body.category,
-      type_id: req.body.type,
-      person_id: req.body.person,
+      categoryId: req.body.categoryId,
+      personId: req.body.personId,
       islamiDate: req.body.islamiDate,
       description: req.body.description,
     }
-    
     var d = new Date();
     var numbar = Math.random();
-    
     if (req.files != null) {
       var file = req.files.file
       var p = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + " " + numbar + " " + file.name;
       var fileName = path.join('uploads/' + p);
-
       data.fileName = p;
       file.mv(fileName, async function (e) {
         if (e) {
@@ -158,7 +151,6 @@ exports.delete = async (req, res, next) => {
 exports.getFile = async (req, res, next) => {
   try {
     var { fileName } = req.params;
-    console.log("fileName")
     var filePath = path.join("uploads/" + fileName);
     res.sendFile(filePath, { root: './' });
   } catch (e) {
@@ -185,8 +177,10 @@ exports.getAllByTypeAndPerson = async (req, res, next) => {
   const { typeId, personId, offset, limit } = req.body;
 
   try {
-    const data = await db.query("select a.id, a.name,a.description,a.date,a.place,a.islamiDate,a.fileName,a.createdAt,a.updatedAt, a.category_person_type_id, a.title from audio a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id inner join person p on p.id = pt.person_id and p.id = " + personId + " and p.deletedAt is null and t.deletedAt is null and t.id = " + typeId + " limit " + offset + " , " + limit, { type: QueryTypes.SELECT });
-    const count = await db.query("select count(a.id) as count from audio a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id inner join person p on p.id = pt.person_id and p.id = " + personId + " and p.deletedAt is null and t.deletedAt is null and t.id = " + typeId, { type: QueryTypes.SELECT });
+    // const data = await db.query("select a.id, a.name,a.description,a.date,a.place,a.islamiDate,a.fileName,a.createdAt,a.updatedAt, a.category_person_type_id, a.title from audio a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id inner join person p on p.id = pt.person_id and p.id = " + personId + " and p.deletedAt is null and t.deletedAt is null and t.id = " + typeId + " limit " + offset + " , " + limit, { type: QueryTypes.SELECT });
+    // const count = await db.query("select count(a.id) as count from audio a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id inner join person p on p.id = pt.person_id and p.id = " + personId + " and p.deletedAt is null and t.deletedAt is null and t.id = " + typeId, { type: QueryTypes.SELECT });
+
+    const categoryIds = await type.findAll({where: {id: id}});
 
     res.send({ data: data, length: count[0].count })
   } catch (e) {

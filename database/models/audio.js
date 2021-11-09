@@ -1,7 +1,9 @@
 const Sequelize = require("sequelize");
 const db = require("../connection");
+const category = require('./category');
+const person = require('./person');
 
-const bayan = db.define(
+const table = db.define(
   "audio",
   {
     id: {
@@ -48,4 +50,4 @@ const bayan = db.define(
     tableName: "audio",
   }
 );
-module.exports = bayan;
+module.exports = table;

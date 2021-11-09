@@ -80,21 +80,15 @@ exports.getByType = async (req, res, next) => {
   const { typeId } = req.body;
   try {
     // const data = await db.query("select c.title, c.id from category c inner join category_person_type cpt on c.id = cpt.category_id inner join person_type pt on cpt.person_type_id = pt.id inner join types t on pt.type_id = t.id and t.deletedAt is null and t.id = " + typeId + " GROUP BY c.id", { type: QueryTypes.SELECT });
-    const data = await category.findAll({
-      where: {type_id: typeId , deletedAt:null}
+    const categoryIds = await typeId.findAll({
+      where: {id: typeId , deletedAt: null},
+      attributes: ['categoryId']
     });
-    res.send(data)
-  } catch (e) {
-    res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
-    console.log(e);
-  }
-};
-
-exports.getByTypeAndPerson = async (req, res, next) => {
-  const { typeId, personId } = req.body;
-  try {
-    const data = await db.query("select c.title, c.id from category c inner join person_type pt on c.person_type_id = pt.id inner join types t on pt.type_id = t.id inner join person p on p.id = pt.person_id and p.id = " + personId + " and p.deletedAt is null and t.deletedAt is null and t.id =" + typeId, { type: QueryTypes.SELECT });
+    
+    const data = await category.findAll({
+      where: { id: categoryIds //[1,2,3] 
+        , deletedAt: null}
+    });
     res.send(data)
   } catch (e) {
     res.statusCode = 300;
