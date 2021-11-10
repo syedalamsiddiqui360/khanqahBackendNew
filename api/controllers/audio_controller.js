@@ -202,9 +202,9 @@ exports.getFile = async (req, res, next) => {
     var filePath = path.join("uploads/" + fileName);
     res.sendFile(filePath, { root: './' });
   } catch (e) {
-    res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
+     res.statusCode = 300;
     console.log(e);
+    res.send({ "message": e.message });
   }
 };
 
@@ -214,9 +214,9 @@ exports.download = async (req, res, next) => {
     var filePath = path.join("uploads/" + fileName);
     res.download(filePath);
   } catch (e) {
-    res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
+     res.statusCode = 300;
     console.log(e);
+    res.send({ "message": e.message });
   }
 };
 
@@ -247,9 +247,9 @@ exports.getAllByTypeAndPerson = async (req, res, next) => {
     })
     res.send({ data: data.rows, length: data.count })
   } catch (e) {
-    res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
+     res.statusCode = 300;
     console.log(e);
+    res.send({ "message": e.message });
   }
 };
 
@@ -278,9 +278,9 @@ exports.getAllByTypePersonCategory = async (req, res, next) => {
     })
     res.send({ data: data.rows, length: data.count })
   } catch (e) {
-    res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
+     res.statusCode = 300;
     console.log(e);
+    res.send({ "message": e.message });
   }
 };
 
@@ -310,9 +310,9 @@ exports.getAllByType = async (req, res, next) => {
     })
     res.send({ data: data.rows, length: data.count })
   } catch (e) {
-    res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
+     res.statusCode = 300;
     console.log(e);
+    res.send({ "message": e.message });
   }
 };
 
@@ -341,9 +341,9 @@ exports.getAllByCategory = async (req, res, next) => {
     })
     res.send({ data: data.rows, length: data.count })
   } catch (e) {
-    res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
+     res.statusCode = 300;
     console.log(e);
+    res.send({ "message": e.message });
   }
 };
 
@@ -385,9 +385,9 @@ exports.getAllBySearch = async (req, res, next) => {
     })
     res.send({ data: data.rows, length: data.count })
   } catch (e) {
-    res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
+     res.statusCode = 300;
     console.log(e);
+    res.send({ "message": e.message });
   }
 };
 
@@ -400,8 +400,8 @@ exports.getByType = async (req, res, next) => {
 
     res.send(data)
   } catch (e) {
-    res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
+     res.statusCode = 300;
     console.log(e);
+    res.send({ "message": e.message });
   }
 };

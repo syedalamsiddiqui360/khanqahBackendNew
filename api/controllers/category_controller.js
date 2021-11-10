@@ -92,7 +92,7 @@ exports.getByType = async (req, res, next) => {
     res.send(data)
   } catch (e) {
     res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
     console.log(e);
+    res.send({ "message": e.message });
   }
 };

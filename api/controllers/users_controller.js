@@ -10,12 +10,11 @@ require("dotenv").config();
 exports.getAllUsers = async (req, res, next) => {
   try {
     const data = await user.findAll({ where: { deletedAt: null } });
-    ;
     res.send({ data });
   } catch (e) {
     res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
     console.log(e);
+    res.send({ "message": e.message });
   }
 };
 
@@ -154,8 +153,8 @@ exports.getOne = async (req, res, next) => {
     res.send({ data });
   } catch (e) {
     res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
     console.log(e);
+    res.send({ "message": e.message });
   }
 };
 
@@ -169,8 +168,8 @@ exports.delete = async (req, res, next) => {
     res.send({ data });
   } catch (e) {
     res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
     console.log(e);
+    res.send({ "message": e.message });
   }
 };
 
@@ -189,7 +188,7 @@ exports.update = async (req, res, next) => {
     res.send({ data });
   } catch (e) {
     res.statusCode = 300;
-    res.send("Please Check log DataBase Error");
     console.log(e);
+    res.send({ "message": e.message });
   }
 };
