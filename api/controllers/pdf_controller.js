@@ -2,25 +2,29 @@ const pdf = require("../../database/models/pdf");
 const path = require('path');
 const { QueryTypes } = require('sequelize');
 const db = require("../../database/connection");
-
+const Category = require("../../database/models/category");
+const Type = require("../../database/models/type");
+const Person = require("../../database/models/person");
+const { Op } = require("sequelize");
 
 //admin api's
 exports.post = async (req, res, next) => {
-  var imageFile = req.files.imageFile
-  var pdfFile = req.files.pdfFile
-
-
-  const data = {
-    name: req.body.name,
-    title: req.body.title,
-    fileName: fileName,
-    imageName: imageName,
-    category_person_type_id: req.body.category,
-    islamiDate: req.body.islamiDate,
-    description: req.body.description,
-  }
-
+  
   try {
+    var imageFile = req.files.imageFile
+    var pdfFile = req.files.pdfFile
+    
+    const data = {
+      name: req.body.name,
+      title: req.body.title,
+      fileName: fileName,
+      imageName: imageName,
+      personId: req.body.personId,
+      categoryId: req.body.categoryId,
+      islamiDate: req.body.islamiDate,
+      description: req.body.description,
+    }
+
     var d = new Date();
     var numbar = Math.random();
 
@@ -73,7 +77,22 @@ exports.getByLimit = async (req, res, next) => {
     const data = await pdf.findAndCountAll({
       offset: offset,
       limit: limit, 
-      where: { deletedAt: null } });
+      where: { deletedAt: null },
+      include:[
+        {
+          model: Person,
+          as: "person",
+        },
+        {
+          model: Category,
+          as: "category",
+          include:{
+            model: Type,
+            as: "type"
+          }
+        }
+      ]
+    });
     res.send(data)
   } catch (e) {
     res.statusCode = 300;
@@ -85,7 +104,22 @@ exports.getByLimit = async (req, res, next) => {
 exports.getAll = async (req, res, next) => {
   try {
     const data = await pdf.findAll({
-      where: { deletedAt: null } });
+      where: { deletedAt: null },
+      include:[
+        {
+          model: Person,
+          as: "person",
+        },
+        {
+          model: Category,
+          as: "category",
+          include:{
+            model: Type,
+            as: "type"
+          }
+        }
+      ]
+    });
     res.send(data)
   } catch (e) {
     res.statusCode = 300;

@@ -1,5 +1,7 @@
 const Sequelize = require("sequelize");
 const db = require("../connection");
+const Category = require('./category');
+const Person = require('./person');
 
 const pdf = db.define(
   "pdf",
@@ -45,4 +47,6 @@ const pdf = db.define(
     tableName: "pdf",
   }
 );
+pdf.belongsTo(Category, {as: 'category'});
+pdf.belongsTo(Person, {as: 'person'});
 module.exports = pdf;

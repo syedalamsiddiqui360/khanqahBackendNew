@@ -396,9 +396,23 @@ exports.getByType = async (req, res, next) => {
   const { typeId, limit , order } = req.body;
 
   try {
-    const data = await db.query("select a.id, a.fileName from audio a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id and t.deletedAt is null and a.deletedAt is null and ctp.deletedAt is null and t.id = "+typeId+" order by date DESC limit "+limit, { type: QueryTypes.SELECT });
-
-    res.send(data)
+    const data = await audio.findAll({
+      limit: limit, 
+      attributes: ['id', 'fileName'],
+      where:{deletedAt: null},
+      order: [
+        ['date', 'DESC']
+      ],
+      include:[
+        {
+          model: Category,
+          as: "category",
+          attributes: ['id', 'typeId'],
+          where:{typeId: typeId}
+        }
+      ]
+    })
+    res.send(data)    
   } catch (e) {
      res.statusCode = 300;
     console.log(e);
