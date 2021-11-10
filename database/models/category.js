@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../connection");
+const Type = require("./type");
 
 const table = db.define(
   "category",
@@ -8,6 +9,9 @@ const table = db.define(
       type: Sequelize.BIGINT(11),
       autoIncrement: true,
       primaryKey: true,
+    },
+    typeId: {
+      type: Sequelize.BIGINT(11),
     },
     title: {
       type: Sequelize.STRING(255),
@@ -24,4 +28,5 @@ const table = db.define(
     tableName: "category",
   }
 );
+table.belongsTo(Type, {as: 'type'});
 module.exports = table;

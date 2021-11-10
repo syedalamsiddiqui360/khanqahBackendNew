@@ -50,4 +50,7 @@ const table = db.define(
     tableName: "audio",
   }
 );
+table.belongsTo(category, {as: 'category'});
+table.belongsTo(person, {as: 'person'});
+
 module.exports = table;
