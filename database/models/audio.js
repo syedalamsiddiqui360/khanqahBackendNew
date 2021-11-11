@@ -52,5 +52,7 @@ const table = db.define(
 );
 table.belongsTo(category, {as: 'category'});
 table.belongsTo(person, {as: 'person'});
+person.hasMany(table, {as: 'audio'});
+category.hasMany(table, {as: 'audio'});
 
 module.exports = table;

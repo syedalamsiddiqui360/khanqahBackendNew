@@ -80,7 +80,23 @@ exports.delete = async (req, res, next) => {
 exports.getByType = async (req, res, next) => {
   try {
     const { typeId } = req.body;
-    const data = await db.query("select p.title, p.id from person_type pt inner join types t on pt.type_id = t.id inner join person p on p.id = pt.person_id and  t.id =" + typeId, { type: QueryTypes.SELECT });
+    // const data = await db.query("select p.title, p.id from person_type pt inner join types t on pt.type_id = t.id inner join person p on p.id = pt.person_id and  t.id =" + typeId, { type: QueryTypes.SELECT });
+
+    const data = await person.findAll({
+      where:{deletedAt: null},
+      // include:[
+      //   {
+      //     model: Audio,
+      //     as: "audio",
+      //     attributes: ['id'],
+      //     include:{
+      //       model: Category,
+      //       as: "category",
+      //       where:{typeId: typeId}
+      //     }
+      //   }
+      // ]
+    })
 
     res.send(data)
   } catch (e) {
