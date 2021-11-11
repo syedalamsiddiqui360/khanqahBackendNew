@@ -131,7 +131,23 @@ exports.getAll = async (req, res, next) => {
 exports.getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const data = await pdf.findOne({where: {id : id , deletedAt : null}});
+    const data = await pdf.findOne({
+      where: {id : id , deletedAt : null},
+      include:[
+        {
+          model: Person,
+          as: "person",
+        },
+        {
+          model: Category,
+          as: "category",
+          include:{
+            model: Type,
+            as: "type"
+          }
+        }
+      ]
+    });
     res.send(data)
   } catch (e) {
     res.statusCode = 300;
@@ -143,21 +159,20 @@ exports.getById = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   
   const {id} = req.params;
-  const data = {
-    name: req.body.name,
-    title: req.body.title,
-    fileName: fileName,
-    imageName: imageName,
-    category_person_type_id: req.body.category,
-    islamiDate: req.body.islamiDate,
-    description: req.body.description,
-  }
-  
   try {
+    const data = {
+      name: req.body.name,
+      title: req.body.title,
+      fileName: fileName,
+      imageName: imageName,
+      personId: req.body.personId,
+      categoryId: req.body.categoryId,
+      islamiDate: req.body.islamiDate,
+      description: req.body.description,
+    }
+  
     var d = new Date();
     var numbar = Math.random();
-    
-    
     
     const record = await pdf.findOne({where: {id : id , deletedAt : null}});
     if (req.files != null) {
@@ -254,10 +269,27 @@ exports.getAllByTypeAndPerson = async (req, res, next) => {
   const { typeId, personId, offset, limit } = req.body;
 
   try {
-    const data = await db.query("select a.id, a.name,a.description,a.islamiDate,a.fileName,a.imageName,a.createdAt,a.updatedAt, a.category_person_type_id, a.title from pdf a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id inner join person p on p.id = pt.person_id and p.id = " + personId + " and p.deletedAt is null and t.deletedAt is null and t.id = " + typeId + " limit " + offset + " , " + limit, { type: QueryTypes.SELECT });
-    const count = await db.query("select count(a.id) as count from pdf a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id inner join person p on p.id = pt.person_id and p.id = " + personId + " and p.deletedAt is null and t.deletedAt is null and t.id = " + typeId, { type: QueryTypes.SELECT });
-
-    res.send({ data: data, length: count[0].count })
+    const data = await pdf.findAndCountAll({
+      offset: offset,
+      limit: limit, 
+      where:{personId: personId , deletedAt: null},
+      include:[
+        {
+          model: Person,
+          as: "person"
+        },
+        {
+          model: Category,
+          as: "category",
+          where:{typeId: typeId},
+          include:{
+            model: Type,
+            as: "type"
+          }
+        }
+      ]
+    })
+    res.send({ data: data.rows, length: data.count })
   } catch (e) {
     res.statusCode = 300;
     res.send({ "message": e.message });
@@ -267,12 +299,29 @@ exports.getAllByTypeAndPerson = async (req, res, next) => {
 
 exports.getAllByTypePersonCategory = async (req, res, next) => {
   const { typeId, categoryId, personId, offset, limit } = req.body;
-  console.log(req.body)
-  try {
-    const data = await db.query("select a.id, a.name,a.description,a.islamiDate,a.fileName,a.imageName,a.createdAt,a.updatedAt, a.category_person_type_id, a.title from pdf a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join category c on ctp.category_id = c.id and c.id = " + categoryId + " and c.deletedAt is null inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id inner join person p on p.id = pt.person_id and p.id = " + personId + " and p.deletedAt is null and t.deletedAt is null and t.id = " + typeId + " limit " + offset + " , " + limit, { type: QueryTypes.SELECT });
-    const count = await db.query("select count(a.id) as count from pdf a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join category c on ctp.category_id = c.id and c.id = " + categoryId + " and c.deletedAt is null inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id inner join person p on p.id = pt.person_id and p.id = " + personId + " and p.deletedAt is null and t.deletedAt is null and t.id = " + typeId, { type: QueryTypes.SELECT });
 
-    res.send({ data: data, length: count[0].count })
+  try {
+    const data = await pdf.findAndCountAll({
+      offset: offset,
+      limit: limit, 
+      where:{personId: personId, categoryId: categoryId, deletedAt: null},
+      include:[
+        {
+          model: Person,
+          as: "person"
+        },
+        {
+          model: Category,
+          as: "category",
+          where:{typeId: typeId},
+          include:{
+            model: Type,
+            as: "type"
+          }
+        }
+      ]
+    })
+    res.send({ data: data.rows, length: data.count })
   } catch (e) {
     res.statusCode = 300;
     res.send({ "message": e.message });
@@ -284,10 +333,27 @@ exports.getAllByType = async (req, res, next) => {
   const { typeId, offset, limit } = req.body;
 
   try {
-    const data = await db.query("select a.id, a.name,a.description,a.islamiDate,a.fileName,a.imageName,a.createdAt,a.updatedAt, a.category_person_type_id, a.title from pdf a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id and t.deletedAt is null and t.id =" + typeId + " limit " + offset + " , " + limit, { type: QueryTypes.SELECT });
-    const count = await db.query("select count(a.id) as count from pdf a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id and t.deletedAt is null and t.id =" + typeId, { type: QueryTypes.SELECT });
-
-    res.send({ data: data, length: count[0].count })
+    const data = await pdf.findAndCountAll({
+      offset: offset,
+      limit: limit, 
+      where:{deletedAt: null},
+      include:[
+        {
+          model: Person,
+          as: "person"
+        },
+        {
+          model: Category,
+          as: "category",
+          where:{typeId: typeId},
+          include:{
+            model: Type,
+            as: "type"
+          }
+        }
+      ]
+    })
+    res.send({ data: data.rows, length: data.count })
   } catch (e) {
     res.statusCode = 300;
     res.send({ "message": e.message });
@@ -299,10 +365,26 @@ exports.getAllByCategory = async (req, res, next) => {
   const { categoryId, offset, limit } = req.body;
 
   try {
-    const data = await db.query("select a.id, a.name,a.description,a.islamiDate,a.fileName,a.imageName,a.createdAt,a.updatedAt, a.category_person_type_id, a.title from pdf a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join category c on ctp.category_id = c.id and c.id = " + categoryId + " and c.deletedAt is null limit " + offset + " , " + limit, { type: QueryTypes.SELECT });
-    const count = await db.query("select count(a.id) as count from pdf a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join category c on ctp.category_id = c.id and c.id = " + categoryId + " and c.deletedAt is null", { type: QueryTypes.SELECT });
-
-    res.send({ data: data, length: count[0].count })
+    const data = await pdf.findAndCountAll({
+      offset: offset,
+      limit: limit, 
+      where:{categoryId: categoryId, deletedAt: null},
+      include:[
+        {
+          model: Person,
+          as: "person"
+        },
+        {
+          model: Category,
+          as: "category",
+          include:{
+            model: Type,
+            as: "type"
+          }
+        }
+      ]
+    })
+    res.send({ data: data.rows, length: data.count })
   } catch (e) {
     res.statusCode = 300;
     res.send({ "message": e.message });
@@ -315,10 +397,36 @@ exports.getAllBySearch = async (req, res, next) => {
   const { search, offset, limit } = req.body;
 
   try {
-    const data = await db.query("select a.id, a.name,a.description,a.islamiDate,a.fileName,a.imageName,a.createdAt,a.updatedAt, a.category_person_type_id, a.title from pdf a where a.title like '%" + search + "%' OR a.description like '%" + search + "%' limit " + offset + " , " + limit, { type: QueryTypes.SELECT });
-    const count = await db.query("select count(a.id) as count from pdf a where a.title like '%" + search + "%' OR a.description like '%" + search + "%'", { type: QueryTypes.SELECT });
-
-    res.send({ data: data, length: count[0].count })
+    const data = await pdf.findAndCountAll({
+      offset: offset,
+      limit: limit, 
+      where:{
+        [Op.or]:[
+          {title: {
+          [Op.substring]: search
+          }},
+          {description: {
+            [Op.substring]: search
+          }}
+        ],
+          deletedAt: null
+        },
+      include:[
+        {
+          model: Person,
+          as: "person"
+        },
+        {
+          model: Category,
+          as: "category",
+          include:{
+            model: Type,
+            as: "type"
+          }
+        }
+      ]
+    })
+    res.send({ data: data.rows, length: data.count })
   } catch (e) {
     res.statusCode = 300;
     console.log(e);
@@ -331,9 +439,23 @@ exports.getByType = async (req, res, next) => {
   const { typeId, limit, categoryId, order } = req.body;
 
   try {
-    const data = await db.query("select a.id, a.fileName, a.imageName from pdf a inner join category_person_type ctp on a.category_person_type_id = ctp.id inner join person_type pt on ctp.person_type_id = pt.id inner join types t on pt.type_id = t.id and t.deletedAt is null and ctp.deletedAt is null and a.deletedAt is null and t.id = " + typeId + " and ctp.category_id = " + categoryId + " order by a.createdAt DESC limit " + limit, { type: QueryTypes.SELECT });
-
-    res.send(data)
+    const data = await pdf.findAll({
+      limit: limit, 
+      attributes: ['id', 'fileName', 'imageName'],
+      where:{categoryId:categoryId, deletedAt: null},
+      order: [
+        ['createdAt', 'DESC']
+      ],
+      include:[
+        {
+          model: Category,
+          as: "category",
+          attributes: ['id', 'typeId'],
+          where:{typeId: typeId}
+        }
+      ]
+    })
+    res.send(data)    
   } catch (e) {
     res.statusCode = 300;
     console.log(e);

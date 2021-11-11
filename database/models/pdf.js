@@ -49,4 +49,5 @@ const pdf = db.define(
 );
 pdf.belongsTo(Category, {as: 'category'});
 pdf.belongsTo(Person, {as: 'person'});
+
 module.exports = pdf;
