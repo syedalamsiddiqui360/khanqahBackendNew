@@ -1,6 +1,7 @@
 const category = require("../../database/models/category");
 const { QueryTypes } = require('sequelize');
 const db = require("../../database/connection");
+const Type = require("../../database/models/type");
 
 exports.post = async (req, res, next) => {
   try {
@@ -19,7 +20,12 @@ exports.getByLimit = async (req, res, next) => {
     const data = await category.findAndCountAll({
       offset: offset,
       limit: limit, 
-      where: { deletedAt: null } });
+      where: { deletedAt: null },
+      include:{
+        model: Type,
+        as: "type"
+      }
+    });
     res.send(data)
   } catch (e) {
     res.statusCode = 300;
