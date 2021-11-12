@@ -7,6 +7,7 @@ const person = require('./person');
 const type = require('./type');
 const category = require('./category');
 const news = require('./news');
+const slider = require('./slider');
 
 module.exports = {
   users,
@@ -17,4 +18,5 @@ module.exports = {
   type,
   category,
   news,
+  slider
 }
