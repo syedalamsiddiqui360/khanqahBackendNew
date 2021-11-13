@@ -15,8 +15,8 @@ const table = db.define(
     description: {
         type: Sequelize.STRING(500),
     },
-    expireDate:{
-       type: Sequelize.DATE
+    expire:{
+       type: Sequelize.BOOLEAN
     }
   },
   {

@@ -1,8 +1,8 @@
-const News = require("../../database/models/news");
+const Slider = require("../../database/models/slider");
 
 exports.post = async (req, res, next) => {
   try {
-   await News.create(req.body);
+   await Slider.create(req.body);
    res.send("Insert Successfully")
   } catch (e) {
     res.statusCode = 300;
@@ -14,7 +14,7 @@ exports.post = async (req, res, next) => {
 exports.getByLimit = async (req, res, next) => {
   try {
     const {offset , limit} = req.body;
-    const data = await News.findAndCountAll({
+    const data = await Slider.findAndCountAll({
       offset: offset,
       limit: limit, 
       where: { deletedAt: null } });
@@ -28,7 +28,7 @@ exports.getByLimit = async (req, res, next) => {
   
   exports.getAll = async (req, res, next) => {
     try {
-      const data = await News.findAll({
+      const data = await Slider.findAll({
         where: { deletedAt: null } });
       res.send(data)
     } catch (e) {
@@ -41,7 +41,7 @@ exports.getByLimit = async (req, res, next) => {
 exports.getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const data = await News.findOne({where: {id : id , deletedAt : null}});
+    const data = await Slider.findOne({where: {id : id , deletedAt : null}});
     res.send(data)
   } catch (e) {
     res.statusCode = 300;
@@ -53,7 +53,7 @@ exports.getById = async (req, res, next) => {
 exports.update = async (req, res, next) => {
   try {
     const {id} = req.params;
-    const result = await News.update( req.body ,{where: {id : id , deletedAt : null}});
+    const result = await Slider.update( req.body ,{where: {id : id , deletedAt : null}});
     res.send(result == 1 ? true:false);
   } catch (e) {
     res.statusCode = 300;
@@ -65,7 +65,7 @@ exports.update = async (req, res, next) => {
 exports.delete = async (req, res, next) => {
   try {
     const {id} = req.params;
-    const result = await News.destroy({where: {id : id}});
+    const result = await Slider.destroy({where: {id : id}});
     res.send(result == 1 ? true:false);
   } catch (e) {
     res.statusCode = 300;
@@ -74,33 +74,3 @@ exports.delete = async (req, res, next) => {
   }
 };
 
-// User Api's
-exports.getLatestNews = async (req, res, next) => {
-  try {
-    const data = await News.findAll({
-        order: [ [ 'createdAt', 'DESC' ]],
-        where:{ deletedAt: null , expire: false},
-        limit: 1
-      })
-    res.send(data);
-  } catch (e) {
-    res.statusCode = 300;
-    res.send({ "message": e.message });
-    console.log(e);
-  }
-};
-
-exports.getNews = async (req, res, next) => {
-  try {
-    const data = await News.findAll({
-        order: [ [ 'createdAt', 'DESC' ]],  
-        where:{ deletedAt: null , expireDate: false},
-        limit: 3
-      })
-    res.send(data);
-  } catch (e) {
-    res.statusCode = 300;
-    res.send({ "message": e.message });
-    console.log(e);
-  }
-};

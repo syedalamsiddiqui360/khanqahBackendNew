@@ -43,6 +43,7 @@ const typeRoutes = require("./api/routes/type");
 const categoryRoutes = require("./api/routes/category");
 const imagesRoutes = require("./api/routes/images");
 const newsRoutes = require("./api/routes/news");
+const sliderRoutes = require("./api/routes/slider");
 const followerRoutes = require("./api/routes/follower");
 
 app.use(morgan("dev")); // it will log all the requests.
@@ -72,6 +73,7 @@ app.use("/person", personRoutes);
 app.use("/category", categoryRoutes);
 app.use("/images", imagesRoutes);
 app.use("/news", newsRoutes);
+app.use("/slider", sliderRoutes);
 app.use("/follower", followerRoutes);
 // //error handling
 app.use((req, res, next) => {
