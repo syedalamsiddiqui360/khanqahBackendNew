@@ -13,4 +13,6 @@ router.post("/get_by_id/:id",    sliderController.getById);
 router.delete("/delete/:id",    sliderController.delete);
 router.put("/update/:id",    sliderController.update);
 
+router.post("/get_all",    sliderController.getAll);
+
 module.exports = router;

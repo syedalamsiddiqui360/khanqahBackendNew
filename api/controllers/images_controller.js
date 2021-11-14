@@ -7,12 +7,15 @@ exports.post = async (req, res, next) => {
     var files = req.files.file
     var d = new Date();
     if (files != null) {
+      console.log(typeof files)
+      console.log(files.size)
+      if (!files.size) {
       files.forEach(file => {
         var numbar = Math.random();
         var p = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + " " + numbar + " " + file.name;
         var fileName = path.join('uploads/' + p);
         const data = {
-          title: file.name,
+          title: req.body.title,
           imageName: p,
           sliderId: req.body.sliderId
         }
@@ -32,6 +35,30 @@ exports.post = async (req, res, next) => {
 
       });
     }
+    else{
+      var numbar = Math.random();
+      var p = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + " " + numbar + " " + files.name;
+      var fileName = path.join('uploads/' + p);
+      const data = {
+        title: req.body.title,
+        imageName: p,
+        sliderId: req.body.sliderId
+      }
+      files.mv(fileName, async function (e) {
+        if (e) {
+          res.statusCode = 300;
+          console.log(e);
+          res.send({ "message": e.message });
+        }
+        else {
+          console.log(data);
+
+          const output = await images.create(data)
+          res.send("file uploaded");
+        }
+      })
+    }
+  }
     else {
       res.statusCode = 300;
       console.log("file is null");
@@ -85,19 +112,18 @@ exports.getById = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    var file = req.files.file
     const {id} = req.params;
     const data = {
-      title: '',
+      title: req.body.title,
       imageName: '',
       sliderId: req.body.sliderId
     }
-    var d = new Date();
-    var numbar = Math.random();
-    var p = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + " " + numbar + " " + file.name;
-    var fileName = path.join('uploads/' + p);
-    if (file != null) {
-      data.title = file.name;
+    if (req.files != null) {
+      var file = req.files.file
+      var d = new Date();
+      var numbar = Math.random();
+      var p = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + " " + numbar + " " + file.name;
+      var fileName = path.join('uploads/' + p);
       data.imageName = p;
       file.mv(fileName, async function (e) {
         if (e) {
@@ -113,8 +139,7 @@ exports.update = async (req, res, next) => {
     }
     else {
       const record = await images.findOne({where: {id : id , deletedAt : null}});
-      data.title = record.title;
-      data.fileName = record.fileName;
+      data.imageName = record.imageName;
       const result = await images.update( data ,{where: {id : id , deletedAt : null}});
       res.send(result == 1 ? true:false);
     }

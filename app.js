@@ -71,7 +71,7 @@ app.use("/pdf", pdfRoutes);
 app.use("/type", typeRoutes);
 app.use("/person", personRoutes);
 app.use("/category", categoryRoutes);
-app.use("/images", imagesRoutes);
+app.use("/image", imagesRoutes);
 app.use("/news", newsRoutes);
 app.use("/slider", sliderRoutes);
 app.use("/follower", followerRoutes);
