@@ -1,6 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("../connection");
-const bcrypt = require("bcrypt");
+const Slider = require("./slider");
 
 const table = db.define(
   "images",
@@ -31,4 +31,5 @@ const table = db.define(
     tableName: "images",
   }
 );
+table.belongsTo(Slider, {as: "slider"});
 module.exports = table;

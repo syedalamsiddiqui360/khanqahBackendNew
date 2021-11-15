@@ -1,5 +1,6 @@
-const images = require("../../database/models/images");
+const Images = require("../../database/models/images");
 const path = require('path');
+const Slider = require("../../database/models/slider")
 
 //admin api's
 exports.post = async (req, res, next) => {
@@ -28,7 +29,7 @@ exports.post = async (req, res, next) => {
           else {
             console.log(data);
 
-            const output = await images.create(data)
+            const output = await Images.create(data)
             res.send("file uploaded");
           }
         })
@@ -53,7 +54,7 @@ exports.post = async (req, res, next) => {
         else {
           console.log(data);
 
-          const output = await images.create(data)
+          const output = await Images.create(data)
           res.send("file uploaded");
         }
       })
@@ -74,10 +75,15 @@ exports.post = async (req, res, next) => {
 exports.getByLimit = async (req, res, next) => {
   try {
     const {offset , limit} = req.body;
-    const data = await images.findAndCountAll({
+    const data = await Images.findAndCountAll({
       offset: offset,
       limit: limit, 
-      where: { deletedAt: null } });
+      where: { deletedAt: null },
+      include:{
+          model: Slider,
+          as: "slider"
+        }
+     });
     res.send(data)
   } catch (e) {
     res.statusCode = 300;
@@ -88,8 +94,13 @@ exports.getByLimit = async (req, res, next) => {
 
 exports.getAll = async (req, res, next) => {
   try {
-    const data = await images.findAll({
-      where: { deletedAt: null } });
+    const data = await Images.findAll({
+      where: { deletedAt: null },
+      include:{
+        model: Slider,
+        as: "slider"
+      }
+     });
     res.send(data)
   } catch (e) {
     res.statusCode = 300;
@@ -101,7 +112,13 @@ exports.getAll = async (req, res, next) => {
 exports.getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const data = await images.findOne({where: {id : id , deletedAt : null}});
+    const data = await Images.findOne({
+      where: {id : id , deletedAt : null},
+      include:{
+        model: Slider,
+        as: "slider"
+      }
+    });
     res.send(data)
   } catch (e) {
     res.statusCode = 300;
@@ -132,15 +149,15 @@ exports.update = async (req, res, next) => {
           res.send({ "message": e.message });
         }
         else {
-          const result = await images.update( data ,{where: {id : id , deletedAt : null}});
+          const result = await Images.update( data ,{where: {id : id , deletedAt : null}});
           res.send(result == 1 ? true:false);
         }
       })
     }
     else {
-      const record = await images.findOne({where: {id : id , deletedAt : null}});
+      const record = await Images.findOne({where: {id : id , deletedAt : null}});
       data.imageName = record.imageName;
-      const result = await images.update( data ,{where: {id : id , deletedAt : null}});
+      const result = await Images.update( data ,{where: {id : id , deletedAt : null}});
       res.send(result == 1 ? true:false);
     }
   } catch (e) {
@@ -153,7 +170,7 @@ exports.update = async (req, res, next) => {
 exports.delete = async (req, res, next) => {
   try {
     const {id} = req.params;
-    const result = await images.destroy({where: {id : id}});
+    const result = await Images.destroy({where: {id : id}});
     res.send(result == 1 ? true:false);
   } catch (e) {
     res.statusCode = 300;
@@ -179,9 +196,13 @@ exports.get = async (req, res, next) => {
 exports.getBySliderId = async (req, res, next) => {
   const { sliderId, limit } = req.body;
   try {
-    const data = await images.findAll({
+    const data = await Images.findAll({
       limit:limit,
-      where:{slider_id:sliderId , deletedAt:null}
+      where:{sliderId:sliderId , deletedAt:null},
+      include:{
+        model: Slider,
+        as: "slider"
+      }
     })
     res.send(data)
   } catch (e) {
